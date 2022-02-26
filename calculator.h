@@ -2,19 +2,44 @@
 #include <string>
 #include <stack>
 
-template<class T>
+
+// expr1 -> ( expr1 )
+//		| expr2 + expr1
+//		| expr2 - expr1
+//		| expr2
+// expr2 -> ( expr1 )
+//		| number * expr2
+//		| number / expr2
+//		| number
+// number -> ( expr )
+//		| - ( expr )
+//		| singleNumber
+//		| - singleNumber
+// singleNumber == [1-9][0-9]*
+
+
+
 class calculator {
 	calculator() {};
 
-	static T Mystoi(std::string& str, size_t& index) {
-		//这个现在只适合于整数
-		//因为系统的stoi需要从str的开头开始转化
+	static long long Mystoi(std::string& str, size_t& index) {
+		// transform to an integer start at the index of the str
+		// index finally points to the next element at the end of the integer
 		bool isNeg = false;
 		if (str[index] == '-') {
 			isNeg = true;
 			++index;
 		}
-		T res = 0;
+		while (index < str.size() && str[index] == ' ')
+			++index;
+		if (str[index] == '(') { // bracket expression
+			++index;
+			if (isNeg)
+				return -Compute(str, index);
+			return Compute(str, index);
+		}
+		// single integer
+		long long res = 0;
 		while (index < str.size() && isdigit(str[index])) {
 			res = res * 10 + str[index++] - '0';
 		}
@@ -23,74 +48,59 @@ class calculator {
 		return res;
 	}
 public:
-	static T Compute(std::string &str, size_t &index) {
-		//要求输入是有效的，类型T范围的，且计算过程中也不能超出类型T范围
-		//可以有负数
-		/*思路如下：
-		**包含三个优先级：()   * /  +-
-		** + - * /在Compute中可以直接计算。
-			*在第一个while循环中，每读入一个数，检查前一个符号是否为 * /，是则直接计算
-			*这样保证栈中的符号只有+-
-			*在第二个while循环中，处理+-运算
-		** () 通过递归调用处理。所以括号是最高优先级
-		*/
+	static  long long Compute(std::string& str, size_t& index) {
+		// input an arithmetic expression. it can include + - * / ( ) and space。 The minus sign can be interpreted as a binary or unary operator
 		if (index >= str.size()) {
 			throw "输入下标超出范围";
 		}
-		std::stack<T> nums;
-		std::stack<char> ops;
-		int state = 0; //为了应对负号。0表示请求数字，1表示请求操作符
+		std::deque<long long> nums;
+		std::deque<char> ops;
+		int state = 0; // for unary operator minus sign. 0 means get an integer, 1 means get an operator
 		while (index < str.size()) {
+			if (str[index] == ' ') {
+				++index; continue;
+			}
 			if (str[index] == ')') {
 				++index;
 				break;
 			}
-			if (state == 1) {
-				ops.push(str[index++]);
+			if (state == 1) { // operator
+				ops.push_back(str[index++]);
 				state = 0;
 			}
-			else {
-				if (str[index] == '(') {
-					++index;
-					nums.push(Compute(str, index));
-				}
-				else {
-					nums.push(Mystoi(str, index));
-				}
-				if (!ops.empty()) {
-					if (ops.top() == '*' || ops.top() == '/') {
-						T b = nums.top(); nums.pop();
-						//T a = nums.top(); nums.pop();
-						if (ops.top() == '*') {
-							nums.top() *= b;
+			else { // integer
+				nums.push_back(Mystoi(str, index));
+				if (!ops.empty()) { // compute the / * . because the / * is the highest priority in deque.
+					if (ops.back() == '*' || ops.back() == '/') {
+						long long b = nums.back(); nums.pop_back();
+						if (ops.back() == '*') {
+							nums.back() *= b;
 						}
 						else {
-							nums.top() /= b;
+							nums.back() /= b;
 						}
-						ops.pop();
+						ops.pop_back();
 					}
 				}
 				state = 1;
 			}
 		}
-		while (!ops.empty()) {
-			char op = ops.top(); ops.pop();
-			int b = nums.top(); nums.pop();
-			//int a = nums.top(); nums.pop();
+		// now there are only plus and minus signs in the deque. 
+		// compute them from front to back.
+		while (!ops.empty()) { 
+			char op = ops.front(); ops.pop_front();
+			long long b = nums.front(); nums.pop_front();
 			switch (op) {
 			case '+':
-				nums.top() += b; break;
+				nums.front() += b; break;
 			case '-':
-				nums.top() -= b; break;
+				nums.front() = b - nums.front(); break;
 			case '*':
-				nums.top() *= b; break;
+				nums.front() *= b; break;
 			case '/':
-				nums.top() /= b; break;
+				nums.front() = b / nums.front(); break;
 			}
 		}
-
-		return nums.top();
-
-
+		return nums.front();
 	}
 };
