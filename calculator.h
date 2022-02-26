@@ -47,6 +47,11 @@ class calculator {
 			return -res;
 		return res;
 	}
+	static bool CmpOp(char a, char b) {
+		if ((a == '+' || a == '-') && (b == '*' || b == '/'))
+			return true;
+		return false;
+	}
 public:
 	static  long long Compute(std::string& str, size_t& index) {
 		// input an arithmetic expression. it can include + - * / ( ) and space。 The minus sign can be interpreted as a binary or unary operator
@@ -65,6 +70,28 @@ public:
 				break;
 			}
 			if (state == 1) { // operator
+				while (!ops.empty()) {
+					if (ops.back() == '(') {
+						break;
+					}
+					if (!CmpOp(ops.back(), str[index])) {
+						char op = ops.back(); ops.pop_back();
+						long long b = nums.back(); nums.pop_back();
+						switch (op) {
+						case '+':
+							nums.back() += b; break;
+						case '-':
+							nums.back() -= b; break;
+						case '*':
+							nums.back() *= b; break;
+						case '/':
+							nums.back() /= b; break;
+						}
+					}
+					else {
+						break;
+					}
+				}
 				ops.push_back(str[index++]);
 				state = 0;
 			}
