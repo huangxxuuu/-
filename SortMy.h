@@ -7,7 +7,7 @@ class SortMy {
 	const static int smallLen = 11;
 public:
 	SortMy() {
-		srand(time(NULL)); // ³õÊ¼»¯Ëæ»úÊıÖÖ×Ó ¡£rand()Êµ¼ÊÉÏÖ»ÄÜÔÚ0-65535Ö®¼äËæ»ú¡£Èç¹ûÊµ¼ÊÊı¾İ³¤¶È¸ü´ó£¬ĞèÒª½«¶à¸örand()µÄ¶ş½øÖÆÎ»Æ´ÆğÀ´
+		srand(time(NULL)); // åˆå§‹åŒ–éšæœºæ•°ç§å­ ã€‚rand()å®é™…ä¸Šåªèƒ½åœ¨0-65535ä¹‹é—´éšæœºã€‚å¦‚æœå®é™…æ•°æ®é•¿åº¦æ›´å¤§ï¼Œéœ€è¦å°†å¤šä¸ªrand()çš„äºŒè¿›åˆ¶ä½æ‹¼èµ·æ¥
 	}
 	void InsertSort(std::vector<int>& t, int left, int right) {
 		for (int i = left + 1; i <= right; ++i)
@@ -16,26 +16,68 @@ public:
 	}
 
 	void QuickSort(std::vector<int>& t, int left, int right) {
-		if (left >= right - smallLen) { // µ±³¤¶È±È½Ï¶ÌÊ±£¬¸ÄÓÃ²åÈëÅÅĞò
+		if (left >= right - smallLen) { // å½“é•¿åº¦æ¯”è¾ƒçŸ­æ—¶ï¼Œæ”¹ç”¨æ’å…¥æ’åº
 			InsertSort(t, left, right);
 			return;
 		}
-		int pivit = t[(rand() % (right - left+1)) + left]; // Ëæ»úÑ¡ÔñÖáÖµ£¬¼õÉÙÌØÊâĞòÁĞµÄ×î²îÊ±¼ä¸´ÔÓ¶È
+		int pivit = t[(rand() % (right - left+1)) + left]; // éšæœºé€‰æ‹©è½´å€¼ï¼Œå‡å°‘ç‰¹æ®Šåºåˆ—çš„æœ€å·®æ—¶é—´å¤æ‚åº¦
 		int i = left, j = right;
 		while (i <= j) {
-			// whileÖĞÃ»ÓĞ i <= j£¬µ«ij¶¼²»»á³¬½çµÄÔ­Òò¡£
-			// ÒÔiÎªÀı½âÊÍ¡£ÒòÎª±È½ÏµÄÊ±ºò²»°üº¬==£¬ÒÔ¼°pivitµÄ´æÔÚ£¬ËùÒÔ i µÄÓÒ²à£¨°üº¬iµÄÎ»ÖÃ£©Ò»¶¨´æÔÚÖÁÉÙÒ»¸öÔªËØÀ´Ê¹ËüµÄwhileÍ£Ö¹¡£
-			// µ± i Óöµ½Õâ¸öÔªËØÊ±¡£1£©Èô i <= j£¬Ôò½øĞĞswap£¬Õâ¸öÔªËØÒÆ¶¯µ½¸üÓÒ²àµÄÎ»ÖÃ£¬±£Ö¤ i µÄÏÂÒ»ÂÖÒ²»áÍ£Ö¹¡£2£©Èô i > j£¬ÍË³öÑ­»·¡£
-			// ËùÒÔÕâÀï Ò»¶¨²»ÄÜÓĞµÈÓÚºÅ
+			// whileä¸­æ²¡æœ‰ i <= jï¼Œä½†ijéƒ½ä¸ä¼šè¶…ç•Œçš„åŸå› ã€‚
+			// ä»¥iä¸ºä¾‹è§£é‡Šã€‚å› ä¸ºæ¯”è¾ƒçš„æ—¶å€™ä¸åŒ…å«==ï¼Œä»¥åŠpivitçš„å­˜åœ¨ï¼Œæ‰€ä»¥ i çš„å³ä¾§ï¼ˆåŒ…å«içš„ä½ç½®ï¼‰ä¸€å®šå­˜åœ¨è‡³å°‘ä¸€ä¸ªå…ƒç´ æ¥ä½¿å®ƒçš„whileåœæ­¢ã€‚
+			// å½“ i é‡åˆ°è¿™ä¸ªå…ƒç´ æ—¶ã€‚1ï¼‰è‹¥ i <= jï¼Œåˆ™è¿›è¡Œswapï¼Œè¿™ä¸ªå…ƒç´ ç§»åŠ¨åˆ°æ›´å³ä¾§çš„ä½ç½®ï¼Œä¿è¯ i çš„ä¸‹ä¸€è½®ä¹Ÿä¼šåœæ­¢ã€‚2ï¼‰è‹¥ i > jï¼Œé€€å‡ºå¾ªç¯ã€‚
+			// æ‰€ä»¥è¿™é‡Œ ä¸€å®šä¸èƒ½æœ‰ç­‰äºå·
 			while (t[i] < pivit) ++i;
 			while (t[j] > pivit) --j;
 			if (i <= j) {
 				std::swap(t[i++], t[j--]);
 			}
 		}
-		// whileÑ­»·½áÊøºó£¬[left, i-1] °üº¬ <= pivit µÄËùÓĞÔªËØ£¬ [i, right] °üº¬ >= pivit µÄËùÓĞÔªËØ
+		// whileå¾ªç¯ç»“æŸåï¼Œ[left, i-1] åŒ…å« <= pivit çš„æ‰€æœ‰å…ƒç´ ï¼Œ [i, right] åŒ…å« >= pivit çš„æ‰€æœ‰å…ƒç´ 
 		QuickSort(t, left, i - 1);
 		QuickSort(t, i, right);
+	}
+
+	void HelpHeapFix(std::vector<int>& t, int len, int i) {  // è°ƒæ•´èŠ‚ç‚¹içš„é¡ºåº
+		int cur, left, right, maxIndex;
+		cur = i;
+		while (cur < len) {
+			left = cur * 2 + 1;
+			right = cur * 2 + 2;
+			if (right < len) {
+				if (t[right] > t[left])
+					maxIndex = right;
+				else
+					maxIndex = left;
+			}
+			else {
+				if (left < len)
+					maxIndex = left;
+				else
+					maxIndex = cur;
+			}
+			if (t[cur] < t[maxIndex]) {
+				std::swap(t[cur], t[maxIndex]);
+				cur = maxIndex;
+			}
+			else {
+				break;
+			}
+		}
+
+	}
+
+	void HelpHeapBuild(std::vector<int>& t, int len) { // å»ºå †
+		for (int i = (len - 1 - 1) / 2; i >= 0; --i)
+			HelpHeapFix(t, len, i);
+	}
+
+	void HeapSort(std::vector<int>& t, int len) {
+		HelpHeapBuild(t, len);
+		for (int end = len - 1; end > 0; --end) { // æ¯æ¬¡æŠŠå †é¡¶å…ƒç´ ç§»åˆ°æœ«å°¾ï¼Œç„¶åç¼©å°å †çš„é•¿åº¦
+			std::swap(t[0], t[end]);
+			HelpHeapFix(t, end, 0);
+		}
 	}
 
 };
