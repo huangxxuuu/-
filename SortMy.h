@@ -2,7 +2,7 @@
 #include <vector>
 #include <random>
 #include <ctime>
-
+// 使用这个题目测试的 https://www.luogu.com.cn/problem/P1177
 class SortMy {
 	const static int smallLen = 11;
 public:
