@@ -2,9 +2,9 @@
 #include <vector>
 #include <random>
 #include <ctime>
-// 使用这个题目测试的 https://www.luogu.com.cn/problem/P1177
+
 class SortMy {
-	const static int smallLen = 11;
+	const static int smallLen = 32;
 public:
 	SortMy() {
 		srand(time(NULL)); // 初始化随机数种子 。rand()实际上只能在0-65535之间随机。如果实际数据长度更大，需要将多个rand()的二进制位拼起来
@@ -21,8 +21,11 @@ public:
 			return;
 		}
 		int pivit = t[(rand() % (right - left+1)) + left]; // 随机选择轴值，减少特殊序列的最差时间复杂度
+														   // 或者选择 left 与 right 的中间值(重要)，不能选择最边上的
+														   // 解释：当选择中间位置时，即使它是最大或最小值，也会在这次遍历后被交换到两侧，使得下一层递归的中间值不是最大最小值
+														   // 若选择最边上的下标，又正好是最大最小值，则这次遍历不会移动它的位置，下一层递归还会选择它。导致无限递归。
 		int i = left, j = right;
-		while (i <= j) {
+		while (i <= j) { // 这里要有等于。因为可能在 j == i+2 处进行一次交换。使得 i == j。这时可能 t[i] < pivit。而循环结束后，i的含义是左侧（<=pivit）的最后元素的后一个下标
 			// while中没有 i <= j，但ij都不会超界的原因。
 			// 以i为例解释。因为比较的时候不包含==，以及pivit的存在，所以 i 的右侧（包含i的位置）一定存在至少一个元素来使它的while停止。
 			// 当 i 遇到这个元素时。1）若 i <= j，则进行swap，这个元素移动到更右侧的位置，保证 i 的下一轮也会停止。2）若 i > j，退出循环。
